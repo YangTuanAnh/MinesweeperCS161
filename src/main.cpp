@@ -244,7 +244,10 @@ int main()
         BeginDrawing();
 
         ClearBackground({255, 245, 225, 225});
-
+        DrawCircle(40, 20, 50, {189, 74, 74, 255 / 2});
+        DrawCircle(20, 40, 100, {252, 105, 85, 255 / 2});
+        DrawCircle(WIDTH - 40, HEIGHT - 20, 50, {189, 74, 74, 255 / 2});
+        DrawCircle(WIDTH - 20, HEIGHT - 40, 100, {252, 105, 85, 255 / 2});
         switch (currentScreen)
         {
         case LOGO:
