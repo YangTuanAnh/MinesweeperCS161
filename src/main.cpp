@@ -29,7 +29,7 @@ Color PRIMARY = {189, 74, 74, 255}, SECONDARY = {252, 105, 85, 255}, TRITARY = {
 int main()
 {
     // Tạo window
-    InitWindow(WIDTH, HEIGHT, "Minesweeper by Yang Tuấn Anh & Tứ Cảnh Minh");
+    InitWindow(WIDTH, HEIGHT, "Minesweeper by Yang Tuấn Anh & Từ Cảnh Minh");
 
     // Tạo window icon
     windowicon();
