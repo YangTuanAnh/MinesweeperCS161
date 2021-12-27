@@ -27,7 +27,7 @@ bool win, gen = true, pause = false;
 Color PRIMARY = {189, 74, 74, 255}, SECONDARY = {252, 105, 85, 255}, TRITARY = {229, 155, 95, 255};
 
 int main()
-{
+{ // 
     // Tạo window
     InitWindow(WIDTH, HEIGHT, "Minesweeper by Yang Tuấn Anh & Từ Cảnh Minh");
 
