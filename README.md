@@ -31,12 +31,13 @@ Các screen: LOGO, TITLE, DIFFICULTY, CUSTOM, GAMEPLAY, WINLOSE, SETTINGS
   - GAMEPLAY: Ma trận game chính, 3 thông số gồm score, timer và bombs, 2 nút BACK và CHECK
     - Cứ 1s từ khi tạo mới game thì timer++;
     - Khi tạo mới game:
-      - Làm sạch 2 ma trận grid.
+      - Làm sạch 2 ma trận grid và sgrid
       - Random các số bomb định trước trên grid sao cho vừa hết
       - Thông qua grid để cập nhập số bomb gần nó là bao nhiêu
       - Reset các thông số score, timer, ngưng đổi mới
     - Khi click chuột trái
       - Nếu ko phải bomb, score++
+      - Cập nhập sgrid
       - Nếu ô đó là ô trống, BFS các ô xung quanh
       - Nếu là bomb, chuyển qua WINLOSE, thua game, cập nhập score
     - Khi click chuốt phải
@@ -49,23 +50,3 @@ Các screen: LOGO, TITLE, DIFFICULTY, CUSTOM, GAMEPLAY, WINLOSE, SETTINGS
   - SETTINGS: 2 nút RESET DATA và BACK, các thông số cần theo dõi
     - RESET DATA: xoá sạch các thông số
     - BACK: chuyển qua TITLE
-
-Để tiện quản lý, các screen được quản lý bởi struct Program và các thông tin (điểm số, thời gian, bảng chơi, ...) được quản lý bởi struct User, struct Table:
-
-* struct User:
-- phương thức create(): khởi tạo kích thước bảng chơi.
-- phương thức timerCount(): quản lý thời gian chơi.
-- phương thức generate(): vẽ bảng chơi và cài đặt các thông số về mức ban đầu.
-- phương thức BFS(): chạy thuật toán loang trên bảng chơi để mở rộng các ô trống.
-
-* struct Program:
-- Gồm tọa độ click chuột mousey, mousex.
-- Thuộc tính screen cho biết màn hình hiện tại của game, được thay đổi trong quá trình thao tác.
-
-* struct Table:
-- hbomb: chiều cao bảng chơi.
-- wbomb: chiều rộng bảng chơi.
-- vbomb: số lượng bomb.
-- flagged[][[]: đánh dấu ô đã được gắn cờ hay chưa.
-- opened[][]: đánh dấu ô đã được mở hay chưa.
-- grid[][]: bảng chứa thông tin các ô (số lượng bomb hoặc bomb)

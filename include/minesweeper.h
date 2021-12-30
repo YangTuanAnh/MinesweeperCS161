@@ -1,24 +1,18 @@
 #pragma once
+
 #include <raylib.h>
-#include <raygui.h>
-#define RAYGUI_IMPLEMENTATION
+#include <time.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <queue>
 #include <utility>
 #include <fstream>
-#include <vector>
-#include <iostream>
-#include <cassert>
-#include <ctime>
-#include <queue>
-#include <algorithm>
 
-using namespace std;
+const int WIDTH = 800, HEIGHT = 600;
+const int MAX_GRID_WIDTH = 24, MAX_GRID_HEIGHT = 16;
+const int MIN_GRID_WIDTH = 2, MIN_GRID_HEIGHT = 2;
 
-const int WIDTH_WINDOW = 800, HEIGHT_WINDOW = 600;
-const int MAX_WIDTH_TABLE = 24, MAX_HEIGHT_TABLE = 16;
-const int MIN_WIDTH_TABLE = 2, MIN_HEIGHT_TABLE = 2;
-const int BOMB = 9; // a specific value for bomb, closed box, flagged box
+const Color PRIMARY = {189, 74, 74, 255}, SECONDARY = {252, 105, 85, 255}, TRITARY = {229, 155, 95, 255};
 
 typedef enum GameScreen
 {
@@ -33,47 +27,35 @@ typedef enum GameScreen
 
 struct Program
 {
-    int framesCounter;
-    int mousex, mousey; // position of click
-    GameScreen screen;
-    Program() : framesCounter(0), screen(LOGO) {}
+    GameScreen currentScreen;
+    int framesCounter, mousex, mousey;
+    bool pause;
+
+    Program() : framesCounter(0), pause(false), currentScreen(LOGO) {}
 };
 
 struct Table
 {
-    int wbomb;                                   // the width of the table that the user are playing
-    int hbomb;                                   // height of table
-    int vbomb;                                   // number of boms generated
-    bool isActive;                               // the current table is activated or not, if not, create it !
-    int grid[MAX_HEIGHT_TABLE][MAX_WIDTH_TABLE]; // the information of cells (blank = 0, number = 1..8, or bomb)
-    // replace sgrid with these two can be longer but it would be more well-defined and accessible
-    bool opened[MAX_HEIGHT_TABLE][MAX_WIDTH_TABLE];  // whether or not a cell is opened
-    bool flagged[MAX_HEIGHT_TABLE][MAX_WIDTH_TABLE]; // whether or not a cell is flagged
+    int wbomb, hbomb, vbomb;
+    int grid[MAX_GRID_HEIGHT][MAX_GRID_WIDTH], sgrid[MAX_GRID_HEIGHT][MAX_GRID_WIDTH];
 
-    Table()
-    {
-        fill(&opened[0][0], &opened[0][0] + sizeof(opened), false);
-        fill(&flagged[0][0], &flagged[0][0] + sizeof(flagged), false);
-    }
     bool isSafe(int, int);
 };
 
 struct User
 {
     Table tab;
-    int score; // current score of the user
-    int hiscore;
-    int timer;        // real time (in seconds)
-    int timerCounter; // FPS (1/60 seconds)
-    bool win;
+    int score, hiscore, timer, timerCounter;
+    bool win, gen;
 
-    User() : score(0), timer(0), timerCounter(0) {}
-    void load_input();
-    void save_output();
-    void create(const int &, const int &, const int &);
-    void timerCount();
+    User() : gen(true) {}
+
+    void input();
+    void output();
     void generate();
-    void BFS(const int &, const int &);
+    void timerCount();
+    void bfs(int, int);
+    void create(int, int, int);
 };
 
 void windowicon();
