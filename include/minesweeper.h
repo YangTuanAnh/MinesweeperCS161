@@ -11,6 +11,8 @@
 const int WIDTH = 800, HEIGHT = 600;
 const int MAX_GRID_WIDTH = 24, MAX_GRID_HEIGHT = 16;
 const int MIN_GRID_WIDTH = 2, MIN_GRID_HEIGHT = 2;
+const int BOMB = 9, CLOSED = 10, FLAGGED = 11;
+const int FPS = 60;
 
 const Color PRIMARY = {189, 74, 74, 255}, SECONDARY = {252, 105, 85, 255}, TRITARY = {229, 155, 95, 255};
 

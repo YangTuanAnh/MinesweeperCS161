@@ -94,7 +94,7 @@ void User::generate()
 void User::timerCount()
 {
     timerCounter++;
-    if (timerCounter % 60 == 0)
+    if (timerCounter % FPS == 0)
     {
         timer++;
         timerCounter = 0;

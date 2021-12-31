@@ -7,24 +7,20 @@ int main()
 {
     // Tạo window
     InitWindow(WIDTH, HEIGHT, "Minesweeper by Yang Tuấn Anh & Tứ Cảnh Minh");
-
     // Tạo window icon
     windowicon();
-
     // Đặt FPS cho game loop
-    SetTargetFPS(60);
-
+    SetTargetFPS(FPS);
     // OST
     InitAudioDevice();
     Music music = LoadMusicStream("..\\music\\song.mp3");
     PlayMusicStream(music);
-
     // GUI Style cho RayGui
     GuiLoadStyle("..\\include\\candy.rgs");
-
+    // Tạo var cho chương trình và data người dùng
     Program currProgram;
     User currUser;
-
+    // Input
     currUser.input();
 
     while (!WindowShouldClose())
@@ -44,7 +40,7 @@ int main()
         {
             // Đợi 2s rồi chuyển qua title
             currProgram.framesCounter++;
-            if (currProgram.framesCounter > 120)
+            if (currProgram.framesCounter > FPS * 2)
                 currProgram.currentScreen = TITLE;
         }
         break;
@@ -72,7 +68,6 @@ int main()
                 currUser.create(8, 8, 10);
                 currProgram.currentScreen = GAMEPLAY;
             }
-
             // Bấm INTERMEDIATE để tạo wbomb=16, hbomb=12, vbomb=50, tạo mới game, chuyển qua GAMEPLAY
             if (GuiButton(Rectangle({250, 290, WIDTH - 250 * 2, 30}), "INTERMEDIATE"))
             {
@@ -85,11 +80,9 @@ int main()
                 currUser.create(24, 16, 100);
                 currProgram.currentScreen = GAMEPLAY;
             }
-
             // Bấm CUSTOM để chuyển qua CUSTOM
             if (GuiButton(Rectangle({250, 370, WIDTH - 250 * 2, 30}), "CUSTOM"))
                 currProgram.currentScreen = CUSTOM;
-
             // Bấm BACK để chuyển qua BACK
             if (GuiButton(Rectangle({250, 410, WIDTH - 250 * 2, 30}), "BACK"))
                 currProgram.currentScreen = TITLE;
@@ -100,7 +93,6 @@ int main()
             // Bấm CREATE để chuyển qua GAMEPLAY
             if (GuiButton(Rectangle({250, 250, WIDTH - 250 * 2, 30}), "CREATE"))
                 currProgram.currentScreen = GAMEPLAY;
-
             // 3 thanh slider để chỉnh giá trị wbomb, hbomb, vbomb
             GuiSpinner(Rectangle({250, 310, WIDTH - 250 * 2, 20}), "width", &currUser.tab.wbomb, MIN_GRID_WIDTH, MAX_GRID_WIDTH, false);
             GuiSpinner(Rectangle({250, 340, WIDTH - 250 * 2, 20}), "height", &currUser.tab.hbomb, MIN_GRID_HEIGHT, MAX_GRID_HEIGHT, false);
@@ -111,30 +103,27 @@ int main()
         {
             // Chạy timer
             currUser.timerCount();
-
             // Tạo mới game
             if (currUser.gen)
                 currUser.generate();
-
             // Lấy vị trí click chuột và toạ độ hoá trên ma trận grid
             Vector2 mousePos = GetMousePosition();
             currProgram.mousex = (mousePos.x - (WIDTH - 32 * currUser.tab.wbomb) / 2) / 32;
             currProgram.mousey = (mousePos.y - (HEIGHT - 32 * currUser.tab.hbomb) / 2) / 32 - 1;
-
             // Nếu click trái vào ma trận
-            if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT) && currUser.tab.isSafe(currProgram.mousey, currProgram.mousex))
+            if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT) &&
+                currUser.tab.isSafe(currProgram.mousey, currProgram.mousex))
             {
                 // Ko phải bomb thì score++
-                if (currUser.tab.grid[currProgram.mousey][currProgram.mousex] < 9 && currUser.tab.sgrid[currProgram.mousey][currProgram.mousex] == 10)
+                if (currUser.tab.grid[currProgram.mousey][currProgram.mousex] < BOMB &&
+                    currUser.tab.sgrid[currProgram.mousey][currProgram.mousex] == CLOSED)
                     currUser.score++;
                 currUser.tab.sgrid[currProgram.mousey][currProgram.mousex] = currUser.tab.grid[currProgram.mousey][currProgram.mousex];
-
                 // Nếu là ô trống thi bfs các ô trống xung quanh
                 if (currUser.tab.sgrid[currProgram.mousey][currProgram.mousex] == 0)
                     currUser.bfs(currProgram.mousey, currProgram.mousex);
-
                 // Nếu là bomb thì end game
-                if (currUser.tab.sgrid[currProgram.mousey][currProgram.mousex] == 9)
+                if (currUser.tab.sgrid[currProgram.mousey][currProgram.mousex] == BOMB)
                 {
                     currProgram.currentScreen = WINLOSE;
                     currUser.win = false;
@@ -142,22 +131,22 @@ int main()
                 }
             }
             // Nếu click chuột phải
-            else if (IsMouseButtonPressed(MOUSE_BUTTON_RIGHT) && currUser.tab.isSafe(currProgram.mousey, currProgram.mousex))
+            else if (IsMouseButtonPressed(MOUSE_BUTTON_RIGHT) &&
+                     currUser.tab.isSafe(currProgram.mousey, currProgram.mousex))
                 // Đổi giữa đặt cờ và ko đặt cờ
-                if (currUser.tab.sgrid[currProgram.mousey][currProgram.mousex] == 10 || currUser.tab.sgrid[currProgram.mousey][currProgram.mousex] == 11)
-                    currUser.tab.sgrid[currProgram.mousey][currProgram.mousex] = 21 - currUser.tab.sgrid[currProgram.mousey][currProgram.mousex];
-
+                if (currUser.tab.sgrid[currProgram.mousey][currProgram.mousex] == CLOSED ||
+                    currUser.tab.sgrid[currProgram.mousey][currProgram.mousex] == FLAGGED)
+                    currUser.tab.sgrid[currProgram.mousey][currProgram.mousex] ^= 1;
             // Bấm BACK để chuyển qua TITLE
             if (GuiButton(Rectangle({740, 10, 50, 30}), "BACK"))
                 currProgram.currentScreen = TITLE;
-
             // Bấm CHECK để dò số bomb đã đặt cờ, nếu đủ thì end game và win
             if (GuiButton(Rectangle({740, 50, 50, 30}), "CHECK"))
             {
                 int cnt = 0;
                 for (int i = 0; i < currUser.tab.hbomb; i++)
                     for (int j = 0; j < currUser.tab.wbomb; j++)
-                        if (currUser.tab.grid[i][j] == 9 && currUser.tab.sgrid[i][j] == 11)
+                        if (currUser.tab.grid[i][j] == BOMB && currUser.tab.sgrid[i][j] == FLAGGED)
                             cnt++;
                 if (cnt == currUser.tab.vbomb)
                 {
@@ -182,7 +171,6 @@ int main()
         {
             // Đặt hiscore
             currUser.hiscore = std::max(currUser.score, currUser.hiscore);
-
             // Reset Data, cho phép tạo mới game
             if (GuiButton(Rectangle({250, 430, WIDTH - 250 * 2, 30}), "RESET DATA"))
             {
@@ -190,7 +178,6 @@ int main()
                     currUser.timer = currUser.timerCounter = currUser.score = currUser.hiscore = 0;
                 currUser.gen = true;
             }
-
             // Bấm BACK để chuyển qua TITLE
             if (GuiButton(Rectangle({250, 470, WIDTH - 250 * 2, 30}), "BACK"))
                 currProgram.currentScreen = TITLE;
@@ -237,27 +224,29 @@ int main()
         case GAMEPLAY:
         {
             DrawText("GAMEPLAY SCREEN", 20, 20, 40, PRIMARY);
-
             // In các thông số score, timer, vbomb
             DrawText(TextFormat("SCORE: %i", currUser.score), 450, 30, 16, TRITARY);
             DrawText(TextFormat("TIMER: %i", currUser.timer), 550, 30, 16, TRITARY);
             DrawText(TextFormat("BOMBS: %i", currUser.tab.vbomb), 650, 30, 16, TRITARY);
-
             // In các ô ma trận dựa theo sgrid
             for (int i = 0; i < currUser.tab.hbomb; i++)
                 for (int j = 0; j < currUser.tab.wbomb; j++)
                 {
-                    float posx = (WIDTH - 32 * currUser.tab.wbomb) / 2 + 32 * j, posy = 72 + (HEIGHT - 72 - 32 * currUser.tab.hbomb) / 2 + 32 * i;
-
-                    currUser.tab.sgrid[i][j] >= 10 ? DrawRectangle(posx, posy, 32, 32, PRIMARY) : DrawRectangle(posx, posy, 32, 32, SECONDARY);
-
-                    if (currUser.tab.sgrid[i][j] == 11)
+                    float posx = (WIDTH - 32 * currUser.tab.wbomb) / 2 + 32 * j;
+                    float posy = 72 + (HEIGHT - 72 - 32 * currUser.tab.hbomb) / 2 + 32 * i;
+                    // Vẽ nền của table
+                    if (currUser.tab.sgrid[i][j] >= CLOSED)
+                        DrawRectangle(posx, posy, 32, 32, PRIMARY);
+                    else
+                        DrawRectangle(posx, posy, 32, 32, SECONDARY);
+                    // Vẽ kí tự của table
+                    if (currUser.tab.sgrid[i][j] == FLAGGED)
                         DrawText("?", posx + 8, posy + 8, 16, RAYWHITE);
-                    if (currUser.tab.sgrid[i][j] == 9)
+                    if (currUser.tab.sgrid[i][j] == BOMB)
                         DrawText("*", posx + 8, posy + 8, 16, RAYWHITE);
-                    if (0 < currUser.tab.sgrid[i][j] && currUser.tab.sgrid[i][j] < 9)
+                    if (0 < currUser.tab.sgrid[i][j] && currUser.tab.sgrid[i][j] < BOMB)
                         DrawText(TextFormat("%d", currUser.tab.grid[i][j]), posx + 8, posy + 8, 16, RAYWHITE);
-
+                    // Vẽ grid cho table
                     DrawRectangleLines(posx, posy, 32, 32, SECONDARY);
                 }
         }
@@ -292,6 +281,7 @@ int main()
 
         EndDrawing();
     }
+
     UnloadMusicStream(music);
 
     CloseAudioDevice();
