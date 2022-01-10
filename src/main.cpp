@@ -129,20 +129,6 @@ int main()
                     currUser.win = false;
                     currUser.score *= currUser.timer;
                 }
-            }
-            // Nếu click chuột phải
-            else if (IsMouseButtonPressed(MOUSE_BUTTON_RIGHT) &&
-                     currUser.tab.isSafe(currProgram.mousey, currProgram.mousex))
-                // Đổi giữa đặt cờ và ko đặt cờ
-                if (currUser.tab.sgrid[currProgram.mousey][currProgram.mousex] == CLOSED ||
-                    currUser.tab.sgrid[currProgram.mousey][currProgram.mousex] == FLAGGED)
-                    currUser.tab.sgrid[currProgram.mousey][currProgram.mousex] ^= 1;
-            // Bấm BACK để chuyển qua TITLE
-            if (GuiButton(Rectangle({740, 10, 50, 30}), "BACK"))
-                currProgram.currentScreen = TITLE;
-            // Bấm CHECK để dò số bomb đã đặt cờ, nếu đủ thì end game và win
-            if (GuiButton(Rectangle({740, 50, 50, 30}), "CHECK"))
-            {
                 int cnt = 0;
                 for (int i = 0; i < currUser.tab.hbomb; i++)
                     for (int j = 0; j < currUser.tab.wbomb; j++)
@@ -155,6 +141,16 @@ int main()
                     currUser.score *= currUser.timer;
                 }
             }
+            // Nếu click chuột phải
+            else if (IsMouseButtonPressed(MOUSE_BUTTON_RIGHT) &&
+                     currUser.tab.isSafe(currProgram.mousey, currProgram.mousex))
+                // Đổi giữa đặt cờ và ko đặt cờ
+                if (currUser.tab.sgrid[currProgram.mousey][currProgram.mousex] == CLOSED ||
+                    currUser.tab.sgrid[currProgram.mousey][currProgram.mousex] == FLAGGED)
+                    currUser.tab.sgrid[currProgram.mousey][currProgram.mousex] ^= 1;
+            // Bấm BACK để chuyển qua TITLE
+            if (GuiButton(Rectangle({740, 20, 50, 30}), "BACK"))
+                currProgram.currentScreen = TITLE;
         }
         break;
         case WINLOSE:
